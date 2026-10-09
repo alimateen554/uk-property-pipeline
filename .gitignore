@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets (passwords, keys)
+.env
+
+# Data files (too large for GitHub)
+data/
+
+# Tool output folders
+spark-warehouse/
+target/
+dbt_packages/
+logs/
+
+# Editor and OS files
+.vscode/
+.DS_Store
