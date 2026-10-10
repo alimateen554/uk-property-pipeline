@@ -1,0 +1,13 @@
+version: 2
+
+# Tables loaded into Postgres by src/load/load_to_postgres.py.
+# dbt does not create these; it only reads from them.
+sources:
+  - name: staging
+    # The Postgres schema the tables live in
+    schema: staging
+    tables:
+      # One row per property sale
+      - name: price_paid
+      # Audit table: one row per load batch
+      - name: load_batches

@@ -1,7 +1,8 @@
 boto3
-python-dotenv
+python-dotenv[cli]
 requests
 sqlalchemy
 psycopg[binary]
 pandas
 pyarrow
+dbt-postgres

@@ -1,0 +1,21 @@
+# Connection settings for the uk_property dbt project.
+# No passwords are written here: env_var() reads each value from
+# environment variables, which "dotenv run" loads from .env.
+# That means this file is safe to commit to GitHub.
+uk_property:
+  # The default target (environment) to use
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST') }}"
+      # Environment variables are text, so convert the port to a number
+      port: "{{ env_var('POSTGRES_PORT') | as_number }}"
+      user: "{{ env_var('POSTGRES_USER') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      dbname: "{{ env_var('POSTGRES_DB') }}"
+      # dbt builds its models in a separate "analytics" schema,
+      # keeping them apart from the raw loaded data in "staging"
+      schema: analytics
+      # Build up to 4 models at the same time
+      threads: 4

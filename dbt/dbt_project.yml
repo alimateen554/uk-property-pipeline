@@ -1,0 +1,21 @@
+# Name of this dbt project (letters, numbers and underscores only)
+name: uk_property
+version: "1.0.0"
+
+# Which connection in profiles.yml this project uses
+profile: uk_property
+
+# Folder containing the model .sql files
+model-paths: ["models"]
+
+# How each folder of models is built in Postgres
+models:
+  uk_property:
+    # Staging models are views: saved queries that always show the
+    # latest data and take up no extra storage
+    staging:
+      +materialized: view
+    # Mart models are tables: results are stored physically, so
+    # dashboards and analysts get fast queries on 10 million rows
+    marts:
+      +materialized: table
