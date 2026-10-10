@@ -1,0 +1,16 @@
+# All containers for the UK property pipeline
+services:
+  # PySpark container that cleans raw data in S3
+  spark:
+    build:
+      context: .
+      dockerfile: docker/spark/Dockerfile
+    # AWS keys and bucket name, passed in at runtime (never baked into the image)
+    env_file: .env
+    volumes:
+      # Cache the S3 connector jars so they are only downloaded once
+      - ivy-cache:/root/.ivy2
+
+# Named storage that persists between container runs
+volumes:
+  ivy-cache:
