@@ -1,0 +1,38 @@
+# Continuous Integration: run the test suite on every push and pull request
+name: CI
+
+# When to run this workflow
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # A fresh Linux machine provided free by GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Download the repository's code onto the machine
+      - uses: actions/checkout@v5
+
+      # 2. Install Python 3.11 (same version as the Docker containers),
+      #    caching downloaded libraries to speed up later runs
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # 3. Install Java 17 so the Spark tests can run
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # 4. Install all project and test libraries
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      # 5. Run every test (Spark tests included, since Java is now present)
+      - name: Run tests
+        run: python -m pytest -v

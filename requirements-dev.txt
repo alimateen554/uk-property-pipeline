@@ -1,0 +1,4 @@
+# Everything needed to develop and test the project:
+# all pipeline libraries (including PySpark) plus the test runner.
+-r requirements-pipeline.txt
+pytest
