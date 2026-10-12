@@ -1,0 +1,4 @@
+# Libraries for the pipeline scripts when they run inside Airflow.
+# Reuses everything in requirements.txt, plus PySpark for the Spark step.
+-r requirements.txt
+pyspark==3.5.6

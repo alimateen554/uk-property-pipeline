@@ -11,7 +11,7 @@ services:
       # Cache the S3 connector jars so they are only downloaded once
       - ivy-cache:/root/.ivy2
 
-  # NEW: PostgreSQL data warehouse
+  # PostgreSQL data warehouse
   postgres:
     image: postgres:16
     # Credentials are read from .env (the ${...} values)
@@ -26,8 +26,45 @@ services:
       # Keep the database files when the container is stopped or rebuilt
       - pg-data:/var/lib/postgresql/data
 
+  # NEW: Airflow orchestrator (all Airflow components in one container)
+  airflow:
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+    # "standalone" runs the scheduler, web UI and other parts together
+    command: standalone
+    # AWS keys, bucket name and Postgres credentials from .env
+    env_file: .env
+    environment:
+      # Inside Docker, containers reach each other by service name,
+      # so Postgres is "postgres" on its internal port 5432
+      # (these override the localhost / 5433 values in .env)
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      # Airflow's own settings
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/project/dags
+      # Local development only: skip the login page
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+      # Airflow stores its run history in the "airflow" database
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/airflow
+    # Airflow web UI at http://localhost:8080
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount the whole project so Airflow runs the same code you edit
+      - .:/opt/airflow/project
+      # Cache the Spark S3 connector between runs
+      - airflow-ivy-cache:/home/airflow/.ivy2
+    # Start Postgres before Airflow
+    depends_on:
+      - postgres
+
 # Named storage that persists between container runs
 volumes:
   ivy-cache:
-  # NEW: storage for the Postgres database files
+  # Storage for the Postgres database files
   pg-data:
+  # NEW: Spark connector cache for the Airflow container
+  airflow-ivy-cache:
